@@ -85,15 +85,21 @@ All locally. No telemetry. No network calls.
 ### Homebrew (planned)
 ```bash
 brew install preexec
-````
+```
 
-### Go
+### Go (recommended)
 
 ```bash
 go install github.com/makalin/preexec/cmd/preexec@latest
 ```
 
-### Rust
+From source:
+
+```bash
+git clone https://github.com/makalin/preexec.git && cd preexec && go build -o preexec ./cmd/preexec
+```
+
+### Rust (planned)
 
 ```bash
 cargo install preexec
@@ -115,6 +121,12 @@ preexec check -- "curl -sSL https://instаll.example | bash"
 preexec check --clipboard
 ```
 
+### Machine-readable output (JSON)
+
+```bash
+preexec check --json -- "curl example.com | sh"
+```
+
 ### Scan a script or README
 
 ```bash
@@ -126,6 +138,26 @@ preexec scan ./README.md --extract
 
 ```bash
 preexec history --shell zsh --last 1000
+```
+
+### Safe-rewrite (strip ANSI, normalize homoglyphs)
+
+```bash
+echo "curl https://instаll.example" | preexec rewrite --normalize
+```
+
+### Compare two commands
+
+```bash
+preexec diff "curl example.com" "curl instаll.example"
+```
+
+### Pre-commit hook (scan staged or given files)
+
+```bash
+preexec pre-commit
+# or with paths:
+preexec pre-commit ./scripts/install.sh
 ```
 
 ---
@@ -144,6 +176,20 @@ eval "$(preexec hook zsh)"
 ```bash
 # ~/.bashrc
 eval "$(preexec hook bash)"
+```
+
+### Fish
+
+```bash
+# ~/.config/fish/config.fish
+preexec hook fish | source
+```
+
+### PowerShell
+
+```bash
+# Add to $PROFILE
+preexec hook powershell
 ```
 
 Behavior:
@@ -182,20 +228,32 @@ WARN pipe-to-shell
  suggestion: download, inspect, then execute
 ```
 
+### Describe a rule
+
+```bash
+preexec explain pipe-to-shell
+# pipe-to-shell: Flags curl|bash, wget|sh and similar patterns; suggests download-then-inspect.
+```
+
 ---
 
 ## Commands
 
-```text
-preexec check -- <command>     Inspect a single command
-preexec scan <path>           Scan files / directories
-preexec history               Scan shell history
-preexec show --codepoints     Reveal hidden Unicode
-preexec hook zsh|bash         Install shell hook
-preexec rules list            List rules
-preexec rules test <rule>     Test a rule
-preexec config init           Create config
-```
+| Command | Description |
+| ------- | ----------- |
+| `preexec check [--json] [--clipboard] -- <command>` | Inspect a single command (or clipboard) |
+| `preexec scan [--extract] <path>` | Scan files or directories; `--extract` = code blocks only from Markdown |
+| `preexec history [--shell zsh\|bash] [--last N]` | Scan shell history |
+| `preexec show --codepoints [--] [string]` | Reveal hidden Unicode (codepoints) |
+| `preexec show --urls [--] [string]` | Extract URLs and show IDN (non-ASCII host) hints |
+| `preexec hook zsh\|bash\|fish\|powershell` | Print shell hook script |
+| `preexec rules list` | List all rules |
+| `preexec rules test <rule> [command]` | Test one rule on a command |
+| `preexec explain [rule...]` | Describe rule(s); no args = list all descriptions |
+| `preexec diff <cmd1> <cmd2>` | Compare two commands (or two lines from stdin) |
+| `preexec rewrite [--normalize] [--] <command>` | Safe-rewrite: strip ANSI, zero-width; `--normalize` = homoglyphs → ASCII |
+| `preexec pre-commit [path...]` | Scan staged files (git) or given paths; for use in pre-commit hooks |
+| `preexec config init` | Create default config at `~/.config/preexec/config.toml` |
 
 ---
 
@@ -233,7 +291,11 @@ ansi_escape = true
 pipe_to_shell = true
 dotfile_write = true
 persistence_patterns = true
+shortener_domains = true
+subshell_command = true
 ```
+
+Rule names for `preexec explain` and `rules test`: `unicode-homoglyph`, `zero-width`, `bidi-controls`, `ansi-escape`, `pipe-to-shell`, `dotfile-write`, `persistence-patterns`, `shortener-domains`, `subshell-command`.
 
 ---
 
@@ -262,12 +324,13 @@ It prefers **false positives over silent compromise**.
 
 ## Roadmap
 
-* [ ] IDN / Punycode visualization
+* [x] IDN / URL hints (`show --urls`)
+* [x] Fish & PowerShell hooks
+* [x] Pre-commit integration (`pre-commit`)
+* [x] Safe-rewrite mode (`rewrite [--normalize]`)
 * [ ] Clipboard watcher daemon
-* [ ] Fish & PowerShell hooks
-* [ ] Pre-commit integration
 * [ ] TUI interactive inspector
-* [ ] Auto safe-rewrite mode
+* [ ] Full Punycode decode in output
 
 ---
 

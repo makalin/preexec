@@ -1,0 +1,59 @@
+# Binaries
+/preexec
+/preexec.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build output
+/dist/
+/build/
+/out/
+*.a
+*.o
+
+# Go
+/vendor/
+*.test
+*.out
+coverage.out
+coverage.html
+go.work
+go.work.sum
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Debug and temp
+/tmp/
+/temp/
+*.log
+*.tmp
+*.temp
+debug
+
+# Rust (if added later)
+/target/
+Cargo.lock
+
+# Local config (optional, uncomment to ignore)
+# .config/
